@@ -1,4 +1,14 @@
 export default async function handler(req, res) {
+  // ✅ Thêm header CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  // ✅ Trả về sớm nếu là request OPTIONS (tiền kiểm tra CORS)
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   const apiKey = process.env.OPENAI_API_KEY;
 
   if (!apiKey) {
@@ -14,7 +24,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: 'gpt-3.5-turbo',
-        messages: [
+        messages: req.body.messages || [
           { role: 'user', content: 'Bạn có thể làm gì?' }
         ],
       }),
